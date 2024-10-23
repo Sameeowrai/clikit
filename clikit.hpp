@@ -50,14 +50,6 @@ inline void cls(){
     #endif
 }
 
-inline void cls(){
-    #ifdef _WIN32
-        system("cls");
-    #elif __linux__
-        system("clear");
-    #endif
-}
-
 // MenuItem struct
 template <typename T>
 struct MenuItem {
