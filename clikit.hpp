@@ -65,10 +65,11 @@ class Menu {
     string m_header;
     int selectedItem = 0;
     float displaySpeed;
+    int m_maxVisibleItems;
 
 public:
-    Menu(string header, vector<MenuItem<T>> menuItems, float speed = 0.01) 
-        : m_menuItems(menuItems), m_header(header), displaySpeed(speed) {}
+    Menu(string header, vector<MenuItem<T>> menuItems, float speed = 0.01, int maxVisibleItems = 5) 
+        : m_menuItems(menuItems), m_header(header), displaySpeed(speed), m_maxVisibleItems(maxVisibleItems) {}
 
     void Display(float time) {
         #ifdef _WIN32
@@ -76,13 +77,24 @@ public:
         #elif __linux__
             system("clear");
         #endif
-        print(m_header, time);
-        for (int i = 0; i < m_menuItems.size(); ++i) {
+        int startIndex = max(0, selectedItem - (m_maxVisibleItems / 2));
+        int endIndex = min(static_cast<int>(m_menuItems.size()), startIndex + m_maxVisibleItems);
+
+        if (startIndex > 0) {
+            print("\u2191", time);
+        }
+        if (endIndex - startIndex < m_maxVisibleItems) {
+            startIndex = max(0, endIndex - m_maxVisibleItems);
+        }
+        for (int i = startIndex; i < endIndex; ++i) {
             if (i == selectedItem) {
                 print("-> " + m_menuItems[i].text, time, "\033[1;32m");
             } else {
                 print("  " + m_menuItems[i].text, time, m_menuItems[i].color);
             }
+        }
+        if (endIndex < m_menuItems.size()) {
+            print("\u2193", time);
         }
     }
 
