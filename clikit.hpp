@@ -70,11 +70,7 @@ public:
         : m_menuItems(menuItems), m_header(header), displaySpeed(speed), m_maxVisibleItems(maxVisibleItems) {}
 
     void Display(float time) {
-        #ifdef _WIN32
-            system("cls");
-        #elif __linux__
-            system("clear");
-        #endif
+        cls();
         print(m_header,time);
         int startIndex = max(0, selectedItem - (m_maxVisibleItems / 2));
         int endIndex = min(static_cast<int>(m_menuItems.size()), startIndex + m_maxVisibleItems);
