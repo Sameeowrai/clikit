@@ -67,6 +67,7 @@ public:
         #elif __linux__
             system("clear");
         #endif
+        print(m_header,time);
         int startIndex = max(0, selectedItem - (m_maxVisibleItems / 2));
         int endIndex = min(static_cast<int>(m_menuItems.size()), startIndex + m_maxVisibleItems);
 
