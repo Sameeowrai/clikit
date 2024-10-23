@@ -5,6 +5,7 @@
 #include <vector>
 #include <unistd.h>
 #include <termios.h>
+#include <sstream>
 
 const unsigned int microsecond = 1000000;
 using namespace std;
@@ -30,14 +31,15 @@ inline void disableRawMode() {
     tcsetattr(0, TCSANOW, &term);
 }
 
-inline void print(string text, float time, string colorCode = defaultColor) {
+inline void print(string text, float time, string colorCode = defaultColor, bool endline = 1) {
     cout << colorCode;
     for (char c : text) {
         cout << c;
         cout.flush();
         usleep(time * microsecond);
     }
-    cout << endl;
+    if(endline == 1)
+        cout << endl;
 }
 
 // MenuItem struct
@@ -98,6 +100,99 @@ public:
 
     void Insert(MenuItem<T> item) {
         m_menuItems.push_back(item);
+    }
+};
+
+// Input class
+template <typename T>
+class Input{
+private:
+    string m_text;
+    float speed;
+    string m_color;
+public:
+    Input(string text, float time, string color = defaultColor): m_text(text),speed(time),m_color(color){}
+    
+    T Read() {
+        print(m_text, speed, m_color, 0);
+        string input;
+        getline(cin, input);
+        while (!IsValid(input)) {
+            getline(cin, input);
+        }
+        return convertInput(input);
+    }
+
+    string ReadSecret(const char& symbol = ' '){
+        print(m_text,speed,m_color,0);
+        string input;
+        int index = 0;
+        char c;
+
+        enableRawMode();
+
+        while(1){
+            c = getchar();
+            if(c == '\n'){
+                break;
+            }else if(c == 127 || c == '\b'){
+                if(!input.empty()){
+                    input.pop_back();
+                    cout << "\b \b";
+                }
+            }
+            else{
+                input += c;
+                cout << symbol;
+            }
+        }
+
+        disableRawMode();
+        cout << endl;
+        return input;
+    }
+
+    vector<T> ReadByDelimiter(const string& delimiter) {
+        print(m_text, speed, m_color, 0);
+        string input;
+        getline(cin, input);
+        
+        vector<T> results;
+        stringstream ss(input);
+        string item;
+
+        while (getline(ss, item, delimiter[0])) {
+            if (IsValid(item,0)) {
+                results.push_back(convertInput(item));
+            }
+        }
+
+        return results;
+    }
+
+    bool IsValid(const string& input, bool debug = true, const string& errorText = "Invalid Input!") {
+        stringstream ss(input);
+        T type;
+        ss >> type;
+
+        if (ss.fail() || !ss.eof()) {
+            if (debug) print(errorText, speed, "\e[0;31m");
+            cout << defaultColor;
+            return false;
+        }
+        
+        return true;
+    }
+
+    T convertInput(const string& input) {
+        stringstream ss(input);
+        T result;
+        
+        if (!(ss >> result)) {
+            throw runtime_error("Conversion failed!");
+        }
+        
+        return result;
     }
 };
 

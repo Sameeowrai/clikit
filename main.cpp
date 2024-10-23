@@ -2,6 +2,15 @@
 #include "clikit.hpp"
 
 int main(){
+    Input<int> input("Enter number\n:",0.1);
+    vector<int> numbers = input.ReadByDelimiter(" ");
+    for(int i: numbers){
+        cout << i << endl;
+    }
+    Input<int> age("Enter your age:",0.1);
+    int val = age.Read();
+    cout << "You are " << val << "years old";
+    cout << input.ReadSecret('x');
     print("Hello world",0.1);
     while(1){
         Menu<int> menu("Menu", {
