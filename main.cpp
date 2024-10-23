@@ -7,7 +7,7 @@ int main(){
     for(int i: numbers){
         cout << i << endl;
     }
-
+    cout << input.ReadSecret('x');
     print("Hello world",0.1);
     while(1){
         Menu<int> menu("Menu", {

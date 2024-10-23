@@ -120,6 +120,35 @@ public:
         return result;
     }
 
+    string ReadSecret(const char& symbol = ' '){
+        print(m_text,speed,m_color,0);
+        string input;
+        int index = 0;
+        char c;
+
+        enableRawMode();
+
+        while(1){
+            c = getchar();
+            if(c == '\n'){
+                break;
+            }else if(c == 127 || c == '\b'){
+                if(!input.empty()){
+                    input.pop_back();
+                    cout << "\b \b";
+                }
+            }
+            else{
+                input += c;
+                cout << symbol;
+            }
+        }
+
+        disableRawMode();
+        cout << endl;
+        return input;
+    }
+
     vector<T> ReadByDelimiter(const string& delimiter) {
         print(m_text, speed, m_color,0);
         string input;
@@ -139,6 +168,8 @@ public:
         
         return results;
     }
+
+
 
     
 
