@@ -7,6 +7,9 @@ int main(){
     for(int i: numbers){
         cout << i << endl;
     }
+    Input<int> age("Enter your age:",0.1);
+    int val = age.Read();
+    cout << "You are " << val << "years old";
     cout << input.ReadSecret('x');
     print("Hello world",0.1);
     while(1){

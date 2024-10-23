@@ -113,11 +113,14 @@ private:
 public:
     Input(string text, float time, string color = defaultColor): m_text(text),speed(time),m_color(color){}
     
-    T Read(){
-        print(m_text,speed,m_color,0);
-        T result;
-        cin >> result;
-        return result;
+    T Read() {
+        print(m_text, speed, m_color, 0);
+        string input;
+        getline(cin, input);
+        while (!IsValid(input)) {
+            getline(cin, input);
+        }
+        return convertInput(input);
     }
 
     string ReadSecret(const char& symbol = ' '){
@@ -150,29 +153,47 @@ public:
     }
 
     vector<T> ReadByDelimiter(const string& delimiter) {
-        print(m_text, speed, m_color,0);
+        print(m_text, speed, m_color, 0);
         string input;
         getline(cin, input);
-
+        
         vector<T> results;
         stringstream ss(input);
         string item;
 
         while (getline(ss, item, delimiter[0])) {
-            stringstream itemStream(item);
-            T value;
-            if (itemStream >> value) { 
-                results.push_back(value);
+            if (IsValid(item,0)) {
+                results.push_back(convertInput(item));
             }
         }
-        
+
         return results;
     }
 
+    bool IsValid(const string& input, bool debug = true, const string& errorText = "Invalid Input!") {
+        stringstream ss(input);
+        T type;
+        ss >> type;
 
+        if (ss.fail() || !ss.eof()) {
+            if (debug) print(errorText, speed, "\e[0;31m");
+            cout << defaultColor;
+            return false;
+        }
+        
+        return true;
+    }
 
-    
-
+    T convertInput(const string& input) {
+        stringstream ss(input);
+        T result;
+        
+        if (!(ss >> result)) {
+            throw runtime_error("Conversion failed!");
+        }
+        
+        return result;
+    }
 };
 
 #endif // CLIKIT_HPP
