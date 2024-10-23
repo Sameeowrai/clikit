@@ -42,6 +42,14 @@ inline void print(string text, float time, string colorCode = defaultColor, bool
         cout << endl;
 }
 
+inline void cls(){
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
+}
+
 // MenuItem struct
 template <typename T>
 struct MenuItem {
