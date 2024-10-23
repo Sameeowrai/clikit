@@ -188,6 +188,10 @@ public:
     }
 
     bool IsValid(const string& input, bool debug = true, const string& errorText = "Invalid Input!") {
+        if constexpr (is_same<T, string>::value) {
+            return true;
+        }
+
         stringstream ss(input);
         T type;
         ss >> type;
@@ -202,6 +206,10 @@ public:
     }
 
     T convertInput(const string& input) {
+        if constexpr (std::is_same<T, std::string>::value) {
+            return input;
+        }
+
         stringstream ss(input);
         T result;
         
