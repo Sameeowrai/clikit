@@ -5,6 +5,7 @@
 #include <vector>
 #include <unistd.h>
 #include <termios.h>
+#include <sstream>
 
 const unsigned int microsecond = 1000000;
 using namespace std;
@@ -30,14 +31,15 @@ inline void disableRawMode() {
     tcsetattr(0, TCSANOW, &term);
 }
 
-inline void print(string text, float time, string colorCode = defaultColor) {
+inline void print(string text, float time, string colorCode = defaultColor, bool endline = 1) {
     cout << colorCode;
     for (char c : text) {
         cout << c;
         cout.flush();
         usleep(time * microsecond);
     }
-    cout << endl;
+    if(endline == 1)
+        cout << endl;
 }
 
 // MenuItem struct
@@ -99,6 +101,47 @@ public:
     void Insert(MenuItem<T> item) {
         m_menuItems.push_back(item);
     }
+};
+
+// Input class
+template <typename T>
+class Input{
+private:
+    string m_text;
+    float speed;
+    string m_color;
+public:
+    Input(string text, float time, string color = defaultColor): m_text(text),speed(time),m_color(color){}
+    
+    T Read(){
+        print(m_text,speed,m_color,0);
+        T result;
+        cin >> result;
+        return result;
+    }
+
+    vector<T> ReadByDelimiter(const string& delimiter) {
+        print(m_text, speed, m_color,0);
+        string input;
+        getline(cin, input);
+
+        vector<T> results;
+        stringstream ss(input);
+        string item;
+
+        while (getline(ss, item, delimiter[0])) {
+            stringstream itemStream(item);
+            T value;
+            if (itemStream >> value) { 
+                results.push_back(value);
+            }
+        }
+        
+        return results;
+    }
+
+    
+
 };
 
 #endif // CLIKIT_HPP

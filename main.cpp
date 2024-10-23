@@ -2,6 +2,12 @@
 #include "clikit.hpp"
 
 int main(){
+    Input<int> input("Enter number\n:",0.1);
+    vector<int> numbers = input.ReadByDelimiter(" ");
+    for(int i: numbers){
+        cout << i << endl;
+    }
+
     print("Hello world",0.1);
     while(1){
         Menu<int> menu("Menu", {
