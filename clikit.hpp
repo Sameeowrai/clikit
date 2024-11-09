@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sstream>
+#include <cmath>
 
 const unsigned int microsecond = 1000000;
 using namespace std;
@@ -14,6 +15,8 @@ const string defaultColor = "\e[0;37m";
 const float gameSpeed = 0.01;
 #define ARROW_UP    65
 #define ARROW_DOWN  66
+#define ARROW_RIGHT 67
+#define ARROW_LEFT  68
 #define ENTER       10
 
 // Function declarations
@@ -218,6 +221,58 @@ public:
         }
         
         return result;
+    }
+};
+
+class InputRange {
+    string m_text;
+    float speed;
+    string m_color;
+    int m_min;
+    int m_max;
+    int value;
+    int m_barValue;
+public:
+    InputRange(string text, int min, int max, int barValue, float time, string color = defaultColor)
+        : m_text(text), m_min(min), m_max(max), m_barValue(barValue), speed(time), m_color(color), value(min) {}
+
+    int Read() {
+        print(m_text, speed, m_color);
+        display();
+        char c;
+        enableRawMode();
+        while (true) {
+            read(STDIN_FILENO, &c, 1);
+            if (c == 27) {
+                char buf[2];
+                if (read(STDIN_FILENO, buf, 2) == 2) {
+                    if (buf[1] == ARROW_LEFT) {
+                        value = max(m_min, value - m_barValue);
+                    } else if (buf[1] == ARROW_RIGHT) {
+                        value = min(m_max, value + m_barValue);
+                    }
+                } else if (c == ENTER) {
+                    disableRawMode();
+                    cout << endl;
+                    return value;
+                }
+                display();
+            }
+        }
+    }
+
+
+    void display() {
+        cout << "\r";
+        for (int i = m_min; i <= m_max; i += m_barValue) {
+            if (i <= value) {
+                cout << "█";
+            } else {
+                cout << "░";
+            }
+        }
+        cout << " [" << value << "/" << m_max << "]";
+        cout.flush();
     }
 };
 
